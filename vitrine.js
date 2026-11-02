@@ -84,6 +84,8 @@
         <span class="prix">${euros(v.prix)}</span></div></button>`).join('');
   }
 
+  const FLECHE_G = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const FLECHE_D = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   async function fiche(id, depuis = 0) {
     const v = vehicules.find(x => x.id === id);
     if (!v) return;
@@ -95,7 +97,9 @@
     $('#fiche').innerHTML = `<div class="fiche-haut">
         <div class="carrousel" id="carrousel">${v.photos.length ? v.photos.map((p, i) => `<img src="${esc(urls.get(p) || '')}" alt="${esc(nom(v))}, photo ${i + 1}">`).join('') : `<div class="sans">${ICO.auto}</div>`}</div>
         <button type="button" class="fermer" id="fermer" aria-label="Fermer">✕</button>
-        ${v.photos.length > 1 ? `<span class="compteur" id="compteur">1 / ${v.photos.length}</span>` : ''}</div>
+        ${v.photos.length > 1 ? `<span class="compteur" id="compteur">1 / ${v.photos.length}</span>
+        <button type="button" class="car-fleche car-prec" data-car="-1" aria-label="Photo précédente" hidden>${FLECHE_G}</button>
+        <button type="button" class="car-fleche car-suiv" data-car="1" aria-label="Photo suivante">${FLECHE_D}</button>` : ''}</div>
       <div class="fiche-corps">
         <div><h2>${esc(nom(v))}</h2>${v.reserve ? '<span class="reserve" style="position:static;display:inline-block;margin-top:6px">Réservé</span>' : ''}</div>
         <span class="prix">${euros(v.prix)}</span>
@@ -114,7 +118,22 @@
         </form>
       </div>`;
     const car = $('#carrousel');
-    car.addEventListener('scroll', () => { const c = $('#compteur'); if (c) c.textContent = `${Math.round(car.scrollLeft / car.clientWidth) + 1} / ${v.photos.length}`; });
+    // Photos : glisser au doigt sur téléphone ; flèches à l'écran ou ← → du clavier sur ordinateur.
+    const n = v.photos.length;
+    const rang = () => Math.min(n - 1, Math.round(car.scrollLeft / Math.max(1, car.clientWidth)));
+    const majCar = () => {
+      const i = rang(), c = $('#compteur');
+      if (c) c.textContent = `${i + 1} / ${n}`;
+      $('#fiche').querySelectorAll('[data-car]').forEach(b => { b.hidden = b.dataset.car < 0 ? i <= 0 : i >= n - 1; });
+    };
+    const allerA = pas => car.scrollTo({ left: Math.max(0, Math.min(n - 1, rang() + pas)) * car.clientWidth, behavior: 'smooth' });
+    car.addEventListener('scroll', majCar);
+    $('#fiche').querySelectorAll('[data-car]').forEach(b => b.addEventListener('click', () => allerA(Number(b.dataset.car))));
+    $('#dlg').onkeydown = e => {
+      if (n < 2 || !/^Arrow(Left|Right)$/.test(e.key) || e.target.closest('input, textarea, select')) return;
+      e.preventDefault();
+      allerA(e.key === 'ArrowLeft' ? -1 : 1);
+    };
     $('#fermer').addEventListener('click', () => $('#dlg').close());
     $('#demande').addEventListener('submit', async e => {
       e.preventDefault();
