@@ -40,6 +40,6 @@ Les données gardées dans le navigateur dépendent de l'adresse : sur ocaz.re i
 ## Pages d'information et référencement
 
 - `rejoindre` : pourquoi rejoindre le réseau (garages, apporteurs), avec contact par mail. Lien en bas du site du réseau (« Vous voulez faire partie du réseau ? »).
-- `mentions-legales`, `confidentialite`, `cgu` : textes légaux. Les mentions surlignées `[…]` (nom, SIREN, adresse, téléphone, région Supabase, ville du tribunal) sont à compléter dans le générateur ou directement dans les fichiers. À faire relire par un professionnel avant le lancement.
+- `mentions-legales`, `confidentialite`, `cgu` : textes légaux, complets (éditeur Anthony Lamer EI, SIREN 132 192 550, SIRET 132 192 550 00011). À faire relire par un professionnel avant le lancement.
 - Pied de page commun (liens légaux) sur l'accueil, le site du réseau, les vitrines, les outils et ces pages (styles dans `marque.css`, pages dans `pages.css`).
 - Référencement : `robots.txt`, `sitemap.xml`, titres, descriptions, adresses canoniques et aperçus de partage (Open Graph). Déclarer `https://ocaz.re/sitemap.xml` dans Google Search Console.
